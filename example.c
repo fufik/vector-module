@@ -1,22 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-typedef struct vec3f
-{
-	float x;
-	float y;
-	float z;
-} vec3f;
-
-vec3f* sumVec3f(vec3f* a,vec3f* b)
-{
-	vec3f* result = (vec3f *)malloc(sizeof (vec3f));
-	*result = (vec3f){a->x+b->x,
-		   a->y+b->y,
-		   a->z+b->z};
-	return result;
-}
-
+#include "src/vmodule.h"
 int main()
 {
 	vec3f * a = (vec3f *)malloc(sizeof (vec3f)),

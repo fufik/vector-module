@@ -4,7 +4,7 @@ TARGET_D= libvmodule.so
 TARGET_S= libvmodule.a
 
 all:	lib
-	${CC} ${CFLAGS} -Lbin/ -lvmodule example.c -o bin/example
+	${CC} ${CFLAGS} -Lbin/ -lvmodule -lm example.c -o bin/example
 	
 mkdirs:
 	if ! [ -d bin ];then mkdir bin;fi;

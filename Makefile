@@ -1,31 +1,36 @@
-CC=gcc
-CFLAGS = -g -Wall
-TARGET_D= libvmodule.so
-TARGET_S= libvmodule.a
+CC	 := gcc
+CFLAGS	 := -g -Wall
+TARGET_D := libvmodule.so
+TARGET_S := libvmodule.a
 
-all:	lib
-	${CC} ${CFLAGS} -Lbin/ -lvmodule -lm example.c -o bin/example
+SRC	 := src
+OBJ	 := obj
+BIN	 := bin
+
+${OBJ} ${BIN}:
+	mkdir -p $@
+
+SOURCES  := $(wildcard ${SRC}/*.c)
+OBJECTS  := $(patsubst ${SRC}/%.c, ${OBJ}/%.o, ${SOURCES})
+
+all:	${BIN} ${OBJ} ${BIN}/${TARGET_D} ${BIN}/${TARGET_S}
+	${CC} ${CFLAGS} -L${BIN}/ -lvmodule -lm example.c -o ${BIN}/example
 	
-mkdirs:
-	if ! [ -d bin ];then mkdir bin;fi;
-	if ! [ -d obj ];then mkdir obj;fi;
+lib:	${BIN} ${OBJ} ${BIN}/${TARGET_D} ${BIN}/${TARGET_S}
+	
+${OBJ}/%.o: ${SRC}/%.c
+	${CC} ${CFLAGS} -c $< -o $@
 
-lib:	lib.so lib.a
+${BIN}/${TARGET_D}: ${OBJECTS}
+	${CC} ${CFLAGS} -shared ${OBJECTS} -o ${BIN}/${TARGET_D} 
 
-lib_obj:mkdirs
-	for FILE in src/*.c; do \
-	  ${CC} ${CFLAGS} -c $${FILE} -o obj/$$(basename $${FILE%.c}).o; \
-	done
+${BIN}/${TARGET_S}: ${OBJECTS}
+	ar rcs ${BIN}/${TARGET_S} ${OBJECTS}
 
-lib.so: lib_obj
-	${CC} ${CFLAGS} -shared obj/*.o -o bin/${TARGET_D} 
-
-lib.a:	lib_obj
-	ar rcs bin/${TARGET_S} obj/*.o
 
 clean:
-	rm -rf bin
-	rm -rf obj
+	rm -rf ${BIN}
+	rm -rf ${OBJ}
 
 
-.PHONY: clean mkdirs all lib.so lib.a lib_obj lib
+.PHONY: clean all lib
